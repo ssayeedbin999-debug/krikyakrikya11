@@ -1,0 +1,297 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Member Login</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap">
+<style>
+  /* Layout: one centered login card on a soft page ground; full-bleed card on phones. */
+  :root {
+    --bg: #eef2ee;
+    --card: #ffffff;
+    --fg: #1d2420;
+    --muted: #6b756e;
+    --line: #c9d1cb;
+    --head: #3d8b63;
+    --head-fg: #ffffff;
+    --banner: #eceeed;
+    --accent: #f47f20;
+    --accent-fg: #ffffff;
+    --icon: #f2a516;
+    --danger: #c0392b;
+    --ok: #2c7a4b;
+    --focus: #1f6fd1;
+    --font: "Hind Siliguri", "Noto Sans Bengali", "Nirmala UI", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1511; --card: #18201b; --fg: #e8eee9; --muted: #98a59c; --line: #3a463d;
+      --head: #2f7350; --head-fg: #ffffff; --banner: #232d26; --accent: #f58a31; --accent-fg: #1a1209;
+      --icon: #f2b43a; --danger: #ff8a7a; --ok: #6cd197; --focus: #7db4ff; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1511; --card: #18201b; --fg: #e8eee9; --muted: #98a59c; --line: #3a463d;
+    --head: #2f7350; --head-fg: #ffffff; --banner: #232d26; --accent: #f58a31; --accent-fg: #1a1209;
+    --icon: #f2b43a; --danger: #ff8a7a; --ok: #6cd197; --focus: #7db4ff; color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { min-height: 100%; }
+  body {
+    margin: 0;
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.5;
+    background: var(--bg);
+    color: var(--fg);
+    padding-block: 24px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  .card {
+    width: 100%;
+    max-width: 440px;
+    background: var(--card);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(20, 40, 28, .14);
+  }
+  .card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--head);
+    color: var(--head-fg);
+    padding: 16px 20px;
+  }
+  .card-head h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    text-wrap: balance;
+  }
+  .icon-btn {
+    display: inline-grid;
+    place-items: center;
+    width: 36px; height: 36px;
+    border: 0; border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    flex: none;
+  }
+  .icon-btn:hover { background: rgba(255,255,255,.18); }
+  .icon-btn svg { width: 22px; height: 22px; }
+
+  .card-body { padding: 20px; display: grid; gap: 20px; }
+
+  .help {
+    position: relative;
+    background: var(--banner);
+    padding: 16px 44px 16px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .help p { margin: 0; flex: 1 1 200px; min-width: 0; font-weight: 600; line-height: 1.45; }
+  .help .watch {
+    flex: 0 0 auto;
+    border: 0;
+    border-radius: 10px;
+    background: var(--accent);
+    color: var(--accent-fg);
+    font: 600 1rem var(--font);
+    padding: 10px 22px;
+    cursor: pointer;
+  }
+  .help .watch:hover { filter: brightness(1.07); }
+  .help .dismiss {
+    position: absolute; top: 8px; right: 8px;
+    width: 28px; height: 28px;
+    background: #8d9490; color: #fff;
+  }
+  .help .dismiss:hover { background: #747b77; }
+  .help .dismiss svg { width: 16px; height: 16px; }
+  .help-note { grid-column: 1 / -1; margin: 0; font-size: .9rem; color: var(--muted); flex-basis: 100%; }
+
+  form { display: grid; gap: 18px; }
+  .field { display: grid; gap: 6px; }
+  .field label { font-weight: 500; }
+  .req { color: var(--danger); }
+  .control {
+    position: relative;
+  }
+  .control > .lead {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    width: 24px; height: 24px; color: var(--icon); pointer-events: none;
+  }
+  .control input {
+    width: 100%;
+    height: 54px;
+    padding: 0 48px 0 46px;
+    font: 500 1.05rem var(--font);
+    color: var(--fg);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+  }
+  .control input::placeholder { color: var(--muted); opacity: .8; font-weight: 400; }
+  .control input:hover { border-color: var(--muted); }
+  .control input:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; border-color: transparent; }
+  .control input[aria-invalid="true"] { border-color: var(--danger); }
+  .toggle {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    width: 42px; height: 42px; color: var(--muted);
+  }
+  .toggle:hover { background: rgba(127,127,127,.15); }
+  .toggle:focus-visible, .icon-btn:focus-visible, .watch:focus-visible, .submit:focus-visible, .forgot:focus-visible {
+    outline: 3px solid var(--focus); outline-offset: 2px;
+  }
+  .toggle svg { width: 22px; height: 22px; }
+  .err { min-height: 0; margin: 0; font-size: .9rem; color: var(--danger); }
+  .err:empty { display: none; }
+
+  .row { display: flex; justify-content: flex-end; }
+  .forgot { color: var(--fg); text-decoration: none; padding: 2px 0; }
+  .forgot:hover { text-decoration: underline; }
+
+  .submit {
+    height: 54px;
+    border: 0; border-radius: 8px;
+    background: var(--head);
+    color: #fff;
+    font: 600 1.1rem var(--font);
+    cursor: pointer;
+  }
+  .submit:hover { filter: brightness(1.08); }
+  .submit[disabled] { opacity: .7; cursor: progress; }
+  .status { margin: 0; text-align: center; font-size: .95rem; min-height: 1.4em; }
+  .status.ok { color: var(--ok); }
+  .signup { margin: 0; text-align: center; color: var(--muted); }
+  .signup a { color: var(--head); font-weight: 600; text-decoration: none; }
+  :root[data-theme="dark"] .signup a { color: var(--ok); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .signup a { color: var(--ok); } }
+  .signup a:hover { text-decoration: underline; }
+
+  @media (max-width: 480px) {
+    body { padding-block: 0; align-items: flex-start; padding-left: 0; padding-right: 0; }
+    .card { max-width: none; border-radius: 0; box-shadow: none; min-height: 100vh; }
+    .card-head, .card-body { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+    .help .watch { width: 100%; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .control input, .submit, .watch { transition: border-color .15s, filter .15s; }
+  }
+</style>
+
+<main class="card" aria-labelledby="title">
+  <header class="card-head">
+    <h1 id="title">ক্রিকিয়া তে স্বাগতম</h1>
+    <button class="icon-btn" type="button" id="clear" aria-label="ফর্ম পরিষ্কার করুন">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>
+    </button>
+  </header>
+
+  <div class="card-body">
+    <section class="help" id="help" aria-label="পাসওয়ার্ড রিসেট সহায়তা">
+      <p>কীভাবে Krikya পাসওয়ার্ড রিসেট করবেন? আরও জানতে বাটনটিতে ক্লিক করুন।</p>
+      <button class="watch" type="button" id="watch">ভিডিও দেখুন</button>
+      <p class="help-note" id="helpNote" hidden>ভিডিও গাইড শীঘ্রই যুক্ত হবে। এখন "পাসওয়ার্ড ভুলে গেছেন" লিংকটি ব্যবহার করুন।</p>
+      <button class="icon-btn dismiss" type="button" id="dismiss" aria-label="বার্তা বন্ধ করুন">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </section>
+
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="username">ব্যবহারকারীর নাম <span class="req" aria-hidden="true">*</span></label>
+        <div class="control">
+          <svg class="lead" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+          <input id="username" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="এখানে পূরণ করুন" required aria-describedby="userErr">
+        </div>
+        <p class="err" id="userErr" role="alert"></p>
+      </div>
+
+      <div class="field">
+        <label for="password">পাসওয়ার্ড <span class="req" aria-hidden="true">*</span></label>
+        <div class="control">
+          <svg class="lead" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/><circle cx="12" cy="15.5" r="1.2" fill="currentColor"/></svg>
+          <input id="password" name="password" type="password" autocomplete="current-password" placeholder="এখানে পূরণ করুন" required aria-describedby="passErr">
+          <button class="icon-btn toggle" type="button" id="toggle" aria-label="পাসওয়ার্ড দেখান" aria-pressed="false">
+            <svg id="eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <p class="err" id="passErr" role="alert"></p>
+      </div>
+
+      <div class="row"><a class="forgot" href="#forgot">পাসওয়ার্ড ভুলে গেছেন</a></div>
+
+      <button class="submit" type="submit" id="submit">লগইন করুন</button>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+      <p class="signup">অ্যাকাউন্ট নেই? <a href="#register">নিবন্ধন করুন</a></p>
+    </form>
+  </div>
+</main>
+
+<script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var form = $('loginForm'), user = $('username'), pass = $('password');
+    var userErr = $('userErr'), passErr = $('passErr'), status = $('status'), submit = $('submit');
+
+    function setErr(input, el, msg) {
+      el.textContent = msg || '';
+      if (msg) input.setAttribute('aria-invalid', 'true'); else input.removeAttribute('aria-invalid');
+    }
+
+    $('dismiss').addEventListener('click', function () { $('help').hidden = true; });
+    $('watch').addEventListener('click', function () { $('helpNote').hidden = false; });
+
+    $('clear').addEventListener('click', function () {
+      form.reset();
+      setErr(user, userErr, ''); setErr(pass, passErr, '');
+      status.textContent = ''; status.className = 'status';
+      user.focus();
+    });
+
+    $('toggle').addEventListener('click', function () {
+      var show = pass.type === 'password';
+      pass.type = show ? 'text' : 'password';
+      this.setAttribute('aria-pressed', String(show));
+      this.setAttribute('aria-label', show ? 'পাসওয়ার্ড লুকান' : 'পাসওয়ার্ড দেখান');
+      $('eye').innerHTML = show
+        ? '<path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0112 5c6.4 0 10 7 10 7a17 17 0 01-3.2 4.1M6.5 6.6A17 17 0 002 12s3.6 7 10 7a10 10 0 004.2-.9"/><path d="M9.9 9.9a3 3 0 004.2 4.2"/>'
+        : '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>';
+    });
+
+    user.addEventListener('input', function () { if (user.value.trim()) setErr(user, userErr, ''); });
+    pass.addEventListener('input', function () { if (pass.value) setErr(pass, passErr, ''); });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      status.textContent = ''; status.className = 'status';
+      var bad = null;
+      if (!user.value.trim()) { setErr(user, userErr, 'ব্যবহারকারীর নাম লিখুন।'); bad = bad || user; } else setErr(user, userErr, '');
+      if (!pass.value) { setErr(pass, passErr, 'পাসওয়ার্ড লিখুন।'); bad = bad || pass; }
+      else if (pass.value.length < 6) { setErr(pass, passErr, 'পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।'); bad = bad || pass; }
+      else setErr(pass, passErr, '');
+      if (bad) { bad.focus(); return; }
+      submit.disabled = true;
+      status.textContent = 'যাচাই করা হচ্ছে…';
+      setTimeout(function () {
+        submit.disabled = false;
+        status.textContent = 'ফর্ম সঠিক আছে। এটি ডেমো পেজ, তাই কোনো তথ্য পাঠানো হয়নি।';
+        status.className = 'status ok';
+      }, 700);
+    });
+  })();
+</script>
+
+</body></html>
